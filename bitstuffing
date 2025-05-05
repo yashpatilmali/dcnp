@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+char* bitStuff(const char *input) {
+    size_t len = strlen(input);
+    size_t max_out = len + len/5 + 2;
+    char *output = malloc(max_out);
+    if (!output) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int count = 0;
+    size_t j = 0;
+
+    for (size_t i = 0; i < len; ++i) {
+        char bit = input[i];
+        output[j++] = bit;
+        if (bit == '1') {
+            count++;
+            if (count == 5) {
+                output[j++] = '0';
+                count = 0;
+            }
+        } else {
+            count = 0;
+        }
+    }
+    output[j] = '\0';
+    return output;
+}
+
+char* bitUnstuff(const char *input) {
+    size_t len = strlen(input);
+    char *output = malloc(len + 1);
+    if (!output) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int count = 0;
+    size_t j = 0;
+
+    for (size_t i = 0; i < len; ++i) {
+        char bit = input[i];
+        output[j++] = bit;
+        if (bit == '1') {
+            count++;
+            if (count == 5) {
+                if (i + 1 < len && input[i+1] == '0') {
+                    i++;
+                }
+                count = 0;
+            }
+        } else {
+            count = 0;
+        }
+    }
+    output[j] = '\0';
+    return output;
+}
+
+int main() {
+    char input[1024];
+
+    printf("Enter a bit string: ");
+    if (!fgets(input, sizeof(input), stdin)) {
+        return 1;
+    }
+    input[strcspn(input, "\n")] = '\0';
+
+    char *stuffed = bitStuff(input);
+    printf("Stuffed bit string:   %s\n", stuffed);
+
+    char *unstuffed = bitUnstuff(stuffed);
+    printf("Un-stuffed bit string: %s\n", unstuffed);
+
+    free(stuffed);
+    free(unstuffed);
+    return 0;
+}
