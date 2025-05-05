@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n, i;
+    unsigned int sum = 0;
+    unsigned short checksum;
+    printf("Enter number of data words: ");
+    if (scanf("%d", &n) != 1) return 1;
+    unsigned short *data = malloc(n * sizeof(unsigned short));
+    if (!data) return 1;
+    printf("Enter data words (0-65535):\n");
+    for (i = 0; i < n; i++) {
+        if (scanf("%hu", &data[i]) != 1) {
+            free(data);
+            return 1;
+        }
+        sum += data[i];
+        if (sum & 0x10000) {
+            sum = (sum & 0xFFFF) + 1;
+        }
+    }
+    checksum = ~sum & 0xFFFF;
+    printf("Checksum: %hu\n", checksum);
+    free(data);
+    return 0;
+}
