@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void computeCRC(char *dividend, const char *divisor, int n, int k) {
+    for (int i = 0; i <= n - k; ++i) {
+        if (dividend[i] == '1') {
+            for (int j = 0; j < k; ++j) {
+                dividend[i + j] = (dividend[i + j] == divisor[j]) ? '0' : '1';
+            }
+        }
+    }
+}
+
+int main() {
+    char data[1024], gen[100];
+    char *dividend, crc[100];
+    int n, k;
+
+    printf("Enter data bits: ");
+    if (scanf("%1023s", data) != 1) return 1;
+    printf("Enter generator bits: ");
+    if (scanf("%99s", gen) != 1) return 1;
+
+    n = strlen(data);
+    k = strlen(gen);
+
+    dividend = malloc(n + k);
+    if (!dividend) return 1;
+
+    strcpy(dividend, data);
+    for (int i = 0; i < k - 1; ++i) 
+        dividend[n + i] = '0';
+    dividend[n + k - 1] = '\0';
+
+    computeCRC(dividend, gen, n + k - 1, k);
+
+    for (int i = 0; i < k - 1; ++i) 
+        crc[i] = dividend[n + i];
+    crc[k - 1] = '\0';
+
+    printf("CRC bits: %s\n", crc);
+    printf("Transmitted frame: %s%s\n", data, crc);
+
+    free(dividend);
+    return 0;
+}
